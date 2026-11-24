@@ -47,6 +47,9 @@
   font-weight: 600;
 }
 
+/* Callouts: keep a space between the gold title and the body (renderer emits them adjacent) */
+.axb .file-callout .file-strong::after { content: '\00a0'; }
+
 /* Group labels in gold, headings cream */
 .axb .file-group-label { color: #d9a441; font-weight: 700; letter-spacing: 0.6px; }
 .axb .file-group-heading { color: #faf3e7; }
