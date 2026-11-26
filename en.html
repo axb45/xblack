@@ -18,7 +18,7 @@ h2.g{color:#d9a441;font-size:19px;margin:30px 0 10px;border-bottom:1px solid rgb
 .xq label{display:block;background:rgba(47,10,22,.4);border:1px solid rgba(217,164,65,.25);border-radius:10px;padding:9px 12px;margin:6px 0;unicode-bidi:plaintext;text-align:start}.xq input{margin-inline-end:8px;accent-color:#d9a441}
 .xq.ok{border:2px solid #6fcf97}.xq.no{border:2px solid #eb5757}.xq .r{margin-top:8px;font-size:14px;color:#f3dca0}
 .xb2{display:block;margin:14px auto;background:#d9a441;color:#3a0c1b;border:0;border-radius:24px;padding:12px 30px;font:700 17px 'IBM Plex Sans Arabic',sans-serif}.xb2.g{background:transparent;color:#d9a441;border:1px solid #d9a441}
-#xs{text-align:center;font-size:30px;color:#f6d98a;font-weight:700;margin:10px 0}</style>
+input.xi{width:100%;box-sizing:border-box;background:#2f0a16;color:#faf3e7;border:1px solid rgba(217,164,65,.5);border-radius:10px;padding:10px;font-size:16px;direction:ltr;text-align:start}#xs{text-align:center;font-size:30px;color:#f6d98a;font-weight:700;margin:10px 0}</style>
 <button id="xb">📝 اختبار تجريبي</button><div id="xo"><div class="in"></div></div>
 <script>(function(){
 var N=20;
@@ -32,16 +32,21 @@ else{o.opts=['صح ✓','غلط ✗'];o.ci=ans.indexOf('صح')==0?0:1}
 return o})}
 function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 var xo=document.getElementById('xo'),box=xo.firstChild;
+var who=null;
+function gate(){if(who)return start();box.innerHTML='<h2>قبل ما تبدأ</h2><div class="xq"><p>الاسم بالكامل</p><input id="xn" class="xi" autocomplete="name"><p style="margin-top:12px">رقم التليفون</p><input id="xp" class="xi" type="tel" inputmode="tel" autocomplete="tel"><label style="margin-top:14px"><input type="checkbox" id="xc">أنا موافق إن اسمي ورقم تليفوني ونتيجتي يتحفظوا ويتستخدموا لتوزيع الجوايز بس.</label><div class="r" id="xe" style="color:#ff9b9b"></div></div><p style="text-align:center;color:#d9a441;font-size:14px">هيتم حفظ اسمك ورقم تليفونك واستخدامهم لتوزيع الجوايز بس.</p><button class="xb2" id="xgo">ابدأ الامتحان</button><button class="xb2 g" id="xcl">إغلاق</button>';xo.style.display='block';xo.scrollTop=0;document.body.style.overflow='hidden';document.getElementById('xcl').onclick=close;document.getElementById('xgo').onclick=function(){var n=document.getElementById('xn').value.trim(),p=document.getElementById('xp').value.replace(/[\s\-+()]/g,'');var e=document.getElementById('xe');if(n.length<6||n.indexOf(' ')<0){e.textContent='اكتب اسمك بالكامل.';return}if(!/^\d{10,15}$/.test(p)){e.textContent='اكتب رقم تليفون صحيح (أرقام بس).';return}if(!document.getElementById('xc').checked){e.textContent='لازم توافق قبل ما تبدأ.';return}who={n:n,p:p};start()}}
+function close(){xo.style.display='none';document.body.style.overflow=''}
+function send(sc){try{var d=new URLSearchParams();d.append('entry.194246716',who.n);d.append('entry.878362143',who.p);d.append('entry.1858974736',document.title.split('|')[0].trim()+' - '+sc);fetch('https://docs.google.com/forms/d/e/1FAIpQLSc4_xbYb-V7y-ryU5lgddPIGX7w__3wmTihanKN3ru_DoL3xw/formResponse',{method:'POST',mode:'no-cors',body:d,keepalive:true})}catch(e){}}
 function start(){var all=items();var mc=shuf(all.filter(function(x){return x.opts.length>2})),tf=shuf(all.filter(function(x){return x.opts.length==2}));
 var nt=Math.min(Math.round(N*0.3),tf.length),nm=Math.min(N-nt,mc.length);var sel=shuf(mc.slice(0,nm).concat(tf.slice(0,nt)));
 var h='<h2>اختبار تجريبي</h2><p style="text-align:center;color:#d9a441">'+sel.length+' سؤال مختارين من الـ70. اختار إجابة لكل سؤال وبعدين اضغط تسليم.</p>';
 sel.forEach(function(x,i){h+='<div class="xq" id="q'+i+'"><p>'+(i+1)+'. '+esc(x.q)+'</p>'+x.opts.map(function(o,j){return '<label><input type="radio" name="r'+i+'" value="'+j+'">'+esc(o)+'</label>'}).join('')+'<div class="r"></div></div>'});
 h+='<div id="xs"></div><button class="xb2" id="xsub">تسليم</button><button class="xb2 g" id="xcl">إغلاق</button>';
 box.innerHTML=h;xo.style.display='block';xo.scrollTop=0;document.body.style.overflow='hidden';
-document.getElementById('xcl').onclick=function(){xo.style.display='none';document.body.style.overflow=''};
-document.getElementById('xsub').onclick=function(){var ok=0;sel.forEach(function(x,i){var c=document.querySelector('input[name=r'+i+']:checked'),d=document.getElementById('q'+i),r=d.querySelector('.r');var good=c&&+c.value===x.ci;if(good)ok++;d.className='xq '+(good?'ok':'no');r.innerHTML=(good?'✔ صح':(c?'✘ غلط':'✘ مجاوبتش'))+(good?'':' — الإجابة الصح: '+esc(x.opts[x.ci]))+'<br>'+esc(x.why);d.querySelectorAll('input').forEach(function(z){z.disabled=true})});
+document.getElementById('xcl').onclick=close;
+var sent=0;document.getElementById('xsub').onclick=function(){if(sent&&this.textContent=='اختبار جديد')return start();var ok=0;sel.forEach(function(x,i){var c=document.querySelector('input[name=r'+i+']:checked'),d=document.getElementById('q'+i),r=d.querySelector('.r');var good=c&&+c.value===x.ci;if(good)ok++;d.className='xq '+(good?'ok':'no');r.innerHTML=(good?'✔ صح':(c?'✘ غلط':'✘ مجاوبتش'))+(good?'':' — الإجابة الصح: '+esc(x.opts[x.ci]))+'<br>'+esc(x.why);d.querySelectorAll('input').forEach(function(z){z.disabled=true})});
 var s=document.getElementById('xs');s.innerHTML='النتيجة: '+ok+' / '+sel.length+'<br><span style="font-size:17px">صح: '+ok+' · غلط: '+(sel.length-ok)+'</span>';
-this.textContent='اختبار جديد';this.onclick=start;s.scrollIntoView({behavior:'smooth'})}}
+if(!sent){sent=1;send(ok+' / '+sel.length)}this.textContent='اختبار جديد';this.onclick=start;s.scrollIntoView({behavior:'smooth'})}}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
-document.getElementById('xb').onclick=start})();</script>
+document.getElementById('xb').onclick=gate})();</script>
+
 </body></html>
